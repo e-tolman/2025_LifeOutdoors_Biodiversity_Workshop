@@ -30,11 +30,7 @@ In your job script:
 source ~/.bashrc
 conda activate psmc
 psmc -N25 -t15 -r5 -p "2+2+25*2+4+6" -o output.psmc output.psmcfa
-```
-
-For bootstrapping:
-
-```bash
+#For bootstraping
 splitfa output.psmcfa > split_output_psmcfa
 
 seq 1 100 | xargs -P40 -I{} \
@@ -44,7 +40,7 @@ seq 1 100 | xargs -P40 -I{} \
 cat round-*.psmc > combined.psmc
 ```
 
-#### 📈 Plot the PSMC results
+#### 📈 Plot the PSMC results (in command line)
 
 ```bash
 conda activate psmc_plot
@@ -67,7 +63,7 @@ conda create -n bcftools -c bioconda bcftools assembly-stats
 conda create -n plink -c bioconda plink
 ```
 
-#### ▶️ Run ROH analysis with bcftools
+#### ▶️ Run ROH analysis with bcftools (in a job script!)
 
 ```bash
 bcftools roh \
@@ -77,7 +73,7 @@ bcftools roh \
   filtered.vcf > sample.roh
 ```
 
-#### ▶️ Run ROH analysis with PLINK
+#### ▶️ Run ROH analysis with PLINK (in terminatl
 
 ```bash
 plink --vcf filtered.vcf --make-bed --double-id --allow-extra-chr --out sample
@@ -85,7 +81,7 @@ plink --vcf filtered.vcf --make-bed --double-id --allow-extra-chr --out sample
 plink --bfile sample --homozyg --homozyg-snp 10 --homozyg-kb 20 --homozyg-density 1000 --homozyg-gap 10000 --homozyg-window-snp 10 --homozyg-window-het 2 --homozyg-window-missing 10 --homozyg-window-threshold 0.005 --allow-extra-chr --out sample_roh_relaxed
 ```
 
-#### 📏 Estimate proportion of genome in ROH (FROH)
+#### 📏 Estimate proportion of genome in ROH (FROH; in terminal )
 
 ```bash
 # Total genome size
@@ -106,13 +102,13 @@ This yields the inbreeding coefficient **FROH** as the fraction of the genome in
 
 #### ▶️ Estimate with ANGSD and realSFS
 
-First, run ANGSD to generate the `.saf.idx` file (not shown here), then run:
+First, run ANGSD to generate the `.saf.idx` file (not shown here), then run (in a job script):
 
 ```bash
 realSFS angsdput.saf.idx > est.ml
 ```
 
-To calculate heterozygosity:
+To calculate heterozygosity (in terminal):
 
 ```bash
 awk '{
