@@ -1,0 +1,2 @@
+insects/E_albertae/ncbi_cleaned.fasta filter=lfs diff=lfs merge=lfs -text
+insects/E_albertae/filtered.vcf filter=lfs diff=lfs merge=lfs -text

@@ -1,0 +1,22 @@
+#!/bin/sh
+
+#SBATCH --time=72:00:00   # walltime
+#SBATCH --ntasks=24   # number of processor cores (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=5000M # memory per CPU core
+#SBATCH -J "angsd"   # job name
+#SBATCH --mail-user=ethan.tolman@gmail.com   # email address
+#SBATCH --account=asuvorov
+#SBATCH --partition=normal_q
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+# Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
+
+# LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+
+source ~/.bashrc
+conda activate angsd
+angsd -dosaf 1 -gl 1 -anc ncbi_cleaned.fasta -ref ncbi_cleaned.fasta -C 50 -minq 20 -minmapq 30 -bam bamlist.txt
+realSFS angsdput.saf.idx > est.ml

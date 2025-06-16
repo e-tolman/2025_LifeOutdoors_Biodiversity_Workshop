@@ -1,0 +1,68 @@
+#!/bin/sh
+
+#SBATCH --time=72:00:00   # walltime
+#SBATCH --ntasks=24   # number of processor cores (i.e. tasks)
+#SBATCH --nodes=1   # number of nodes
+#SBATCH --mem-per-cpu=5000M # memory per CPU core
+#SBATCH -J "roh"   # job name
+#SBATCH --mail-user=ethan.tolman@gmail.com   # email address
+#SBATCH --account=asuvorov
+#SBATCH --partition=normal_q
+#SBATCH --mail-type=BEGIN
+#SBATCH --mail-type=END
+#SBATCH --mail-type=FAIL
+
+# Set the max number of threads to use for programs using OpenMP. Should be <= ppn. Does nothing if the program doesn't use OpenMP.
+
+# LOAD MODULES, INSERT CODE, AND RUN YOUR PROGRAMS HERE
+
+source ~/.bashrc
+conda activate bwa
+
+#create a raw vcf
+bcftools mpileup \
+  -f ncbi_cleaned.fasta \
+  -Ou \
+  --threads 24\
+  mapped_reads_sorted.bam \
+| bcftools call \
+  --skip-variants indels \
+  -mv \
+  -Ov \
+  --threads 24 \
+  -o raw.vcf
+
+
+#filter the vcf for only high quality sites
+
+bcftools filter \
+  -i 'DP>10 && QUAL>20' \
+  -Ov \
+  --threads 24\
+  -o filtered.vcf \
+  raw.vcf
+
+
+bcftools roh \
+  -G30 \
+  --threads 24 \
+  --AF-dflt 0.4 \
+  filtered.vcf \
+  > sample.roh
+
+# total ROH length
+roh_sum=$( awk '$1!~/^#/ { sum += $6 } END {print sum}' sample.roh )
+  # here we assume column 6 is the ROH length in bp (“L_ROH”)
+
+# total autosome length
+autosum=$( awk 'NR==FNR{len[$1]=$2; next} $1 in len{total+=len[$1]} END{print total}' \
+  <(paste <(awk '{print $1,$2}' ncbi_cleaned.fasta.fai)) autosomes.txt )
+
+# proportion
+echo "ROH bp: $roh_sum"
+echo "Autosome bp: $autosum"
+awk -v r=$roh_sum -v g=$autosum 'BEGIN{printf "Genome in ROH: %.4f\n", r/g}'
+
+
+
+
