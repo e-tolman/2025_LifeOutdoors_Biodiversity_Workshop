@@ -44,7 +44,7 @@ cat round-*.psmc > combined.psmc
 
 ```bash
 conda activate psmc_plot
-perl psmc_plot.pl -R -p -u 2e-9 -g 1.0 test combined.psmc
+perl psmc_plot.pl -R -p -u 2e-9 -g 1.0 psmc_output combined.psmc
 ```
 
 > ⚠️ **Note**: Change `-g` to the generation time for your species. You can also use psmc_color_plot.pl (in each species directory) to change the plot colors.
